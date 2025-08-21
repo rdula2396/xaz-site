@@ -1,0 +1,56 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/uploads"     # where uploaded files are stored in the repo
+public_folder: "/uploads"          # how the site refers to them
+
+collections:
+  # Services are edited as a simple list in JSON
+  - name: "services"
+    label: "Services"
+    editor:
+      preview: false
+    files:
+      - file: "public/data/services.json"
+        label: "Services List"
+        name: "services_file"
+        format: json
+        fields:
+          - label: Services
+            name: services
+            widget: list
+            fields:
+              - { label: Name, name: name, widget: string }
+              - { label: Price, name: price, widget: string }
+
+  # Hours are also JSON rows (day + hours string)
+  - name: "hours"
+    label: "Hours"
+    editor:
+      preview: false
+    files:
+      - file: "public/data/hours.json"
+        label: "Hours Table"
+        name: "hours_file"
+        format: json
+        fields:
+          - label: Hours
+            name: hours
+            widget: list
+            fields:
+              - { label: Day, name: d, widget: string }
+              - { label: Hours, name: h, widget: string }
+
+  # Gallery lets you upload images to /public/uploads and reference them later.
+  - name: "gallery"
+    label: "Gallery"
+    folder: "public/uploads/gallery"
+    create: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: json
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Image, name: image, widget: image }
+      - { label: Alt Text, name: alt, widget: string, required: false }

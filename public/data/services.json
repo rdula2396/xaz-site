@@ -1,0 +1,12 @@
+{
+  "services": [
+    { "name": "Upholstery Shampoo", "price": "$49" },
+    { "name": "Engine Bay Detail", "price": "$59" },
+    { "name": "Foam Wash Service", "price": "$79" },
+    { "name": "Odor Eliminator", "price": "$79" },
+    { "name": "Mini Detail Service", "price": "$199" },
+    { "name": "Complete Detail Service", "price": "$299" },
+    { "name": "Ceramic Coatings", "price": "Call for Free Quote" },
+    { "name": "Window Tint", "price": "Call for Free Quote" }
+  ]
+}

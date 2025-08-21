@@ -1,0 +1,11 @@
+{
+  "hours": [
+    { "d": "Monday", "h": "6 AM – 6 PM" },
+    { "d": "Tuesday", "h": "6 AM – 6 PM" },
+    { "d": "Wednesday", "h": "6 AM – 6 PM" },
+    { "d": "Thursday", "h": "6 AM – 6 PM" },
+    { "d": "Friday", "h": "6 AM – 6 PM" },
+    { "d": "Saturday", "h": "7 AM – 5 PM" },
+    { "d": "Sunday", "h": "Closed" }
+  ]
+}
