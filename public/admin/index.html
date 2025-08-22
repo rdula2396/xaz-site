@@ -12,29 +12,13 @@
       .error { color: #b00020; margin-top: 8px; white-space: pre-wrap; }
     </style>
 
-    <!-- Netlify Identity (needed for login/signup + invite token) -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    <script>
-      // Pin Identity to your domain so it doesn't get confused by the old name
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.init({
-          APIUrl: "https://xaz-auto-detailing.netlify.app/.netlify/identity"
-        });
-        window.netlifyIdentity.on('login',  () => location.replace('/admin/'));
-        window.netlifyIdentity.on('signup', () => location.replace('/admin/'));
-        window.netlifyIdentity.on('logout', () => location.replace('/admin/'));
-      }
-    </script>
+    <!-- Defer loading so <body> exists before scripts run -->
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-    <!-- Decap (Netlify) CMS -->
-    
-
-    <!-- IMPORTANT: manual init so we don't fetch /admin/config.yml at all -->
     <script>
+      // Inline CMS config (manual init) — no fetch of /admin/config.yml needed
       window.CMS_MANUAL_INIT = true;
-
-      // Inline the same config we had in config.yml
-      const CONFIG = {
+      window.CONFIG = {
         backend: { name: "git-gateway", branch: "main" },
         media_folder: "public/uploads",
         public_folder: "/uploads",
@@ -104,64 +88,55 @@
         ]
       };
 
-      document.addEventListener('DOMContentLoaded', function () {
-        try {
-          if (window.CMS) {
-            CMS.init({ config: CONFIG });
-          } else {
-            document.body.insertAdjacentHTML('beforeend',
-              '<div class="boot"><div class="error">CMS library failed to load.</div></div>');
+      // Robust CMS loader: try unpkg then jsDelivr; init when loaded
+      function loadCMSWithFallback() {
+        function initWhenReady() {
+          try {
+            if (window.CMS && window.CONFIG) CMS.init({ config: window.CONFIG });
+          } catch (e) {
+            showError("CMS init error: " + (e?.message || e));
           }
-        } catch (e) {
-          document.body.insertAdjacentHTML('beforeend',
-            '<div class="boot"><div class="error">Init error: ' + (e && e.message ? e.message : e) + '</div></div>');
         }
-      });
-    </script>
-<script>
-  // Robust loader: try unpkg, then jsDelivr. When loaded, init with CONFIG.
-  (function () {
-    function fail(msg) {
-      document.body.insertAdjacentHTML(
-        "beforeend",
-        '<div class="boot"><div class="error">CMS load error: ' + msg + "</div></div>"
-      );
-    }
-    function initWhenReady() {
-      try {
-        if (window.CMS && window.CONFIG) {
-          CMS.init({ config: CONFIG });
-        } else if (!window.CMS) {
-          fail("CMS object missing after load.");
+        function load(src, onload, onerror) {
+          var s = document.createElement("script");
+          s.src = src; s.async = true; s.onload = onload; s.onerror = onerror;
+          document.head.appendChild(s);
         }
-      } catch (e) {
-        fail(e && e.message ? e.message : String(e));
-      }
-    }
-    function load(src, onload, onerror) {
-      var s = document.createElement("script");
-      s.src = src;
-      s.async = true;
-      s.onload = onload;
-      s.onerror = onerror;
-      document.head.appendChild(s);
-    }
-    load(
-      "https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js",
-      initWhenReady,
-      function () {
         load(
-          "https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js",
+          "https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js",
           initWhenReady,
           function () {
-            fail("Could not load Decap CMS from either CDN.");
+            load(
+              "https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js",
+              initWhenReady,
+              function () { showError("Could not load Decap CMS from either CDN."); }
+            );
           }
         );
       }
-    );
-  })();
-</script>
 
+      function showError(msg) {
+        var el = document.getElementById("bootError");
+        if (el) { el.style.display = "block"; el.textContent = msg; }
+      }
+
+      // Wait until <body> exists before doing anything (fixes appendChild null)
+      document.addEventListener("DOMContentLoaded", function () {
+        try {
+          if (window.netlifyIdentity) {
+            window.netlifyIdentity.init({
+              APIUrl: "https://xaz-auto-detailing.netlify.app/.netlify/identity"
+            });
+            window.netlifyIdentity.on("login",  () => location.replace("/admin/"));
+            window.netlifyIdentity.on("signup", () => location.replace("/admin/"));
+            window.netlifyIdentity.on("logout", () => location.replace("/admin/"));
+          }
+        } catch (e) {
+          showError("Identity init error: " + (e?.message || e));
+        }
+        loadCMSWithFallback();
+      });
+    </script>
   </head>
   <body>
     <div class="boot">
@@ -169,14 +144,5 @@
       <div class="muted">If this stays here more than ~10 seconds, refresh the page.</div>
       <div id="bootError" class="error" style="display:none"></div>
     </div>
-    <script>
-      window.addEventListener('error', function (e) {
-        var el = document.getElementById('bootError');
-        if (el) {
-          el.style.display = 'block';
-          el.textContent = 'Boot error: ' + (e && e.message ? e.message : String(e));
-        }
-      });
-    </script>
   </body>
 </html>

@@ -21,7 +21,18 @@
   }
 </script>
 <!-- Netlify Identity on homepage so invite links work -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.init({
+        APIUrl: "https://xaz-auto-detailing.netlify.app/.netlify/identity"
+      });
+      window.netlifyIdentity.on('login',  () => location.href = '/admin/');
+      window.netlifyIdentity.on('signup', () => location.href = '/admin/');
+    }
+  });
+</script>
 <script>
   if (window.netlifyIdentity) {
     window.netlifyIdentity.init({
