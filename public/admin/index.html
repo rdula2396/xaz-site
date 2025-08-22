@@ -4,45 +4,72 @@
     <meta charset="utf-8" />
     <title>Content Manager</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Netlify Identity widget (handles login/signup) -->
+
+    <!-- Minimal styles so we don't stare at a blank page -->
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
+      .boot { padding: 24px; color: #111; }
+      .muted { color: #666; font-size: 14px; margin-top: 8px; }
+      .error { color: #b00020; margin-top: 8px; white-space: pre-wrap; }
+    </style>
+
+    <!-- Netlify Identity -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.init({
-      APIUrl: "https://xaz-auto-detailing.netlify.app/.netlify/identity"
-    });
-  }
-</script>
-<!-- Netlify Identity -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.init({
-      APIUrl: "https://xaz-auto-detailing.netlify.app/.netlify/identity"
-    });
-  }
-</script>
+    <script>
+      // Pin Identity to YOUR site (prevents old-domain confusion)
+      window.CMS_BOOT_LOGS = [];
+      function logBoot(msg) { try { window.CMS_BOOT_LOGS.push(msg); } catch(e){} }
 
-<!-- Decap CMS -->
-<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-
+      (function initIdentity() {
+        if (!window.netlifyIdentity) { logBoot("Identity widget missing"); return; }
+        try {
+          window.netlifyIdentity.init({
+            APIUrl: "https://xaz-auto-detailing.netlify.app/.netlify/identity"
+          });
+          // Redirect to this page after login/signup, so CMS can load
+          window.netlifyIdentity.on('login', () => { location.replace('/admin/'); });
+          window.netlifyIdentity.on('signup', () => { location.replace('/admin/'); });
+          window.netlifyIdentity.on('logout', () => { location.replace('/admin/'); });
+        } catch (e) {
+          logBoot("Identity init error: " + (e && e.message ? e.message : e));
+        }
+      })();
+    </script>
 
     <!-- Decap (Netlify) CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script>
+      // If not logged in yet, auto-open the login dialog so the invite token can be processed
+      document.addEventListener('DOMContentLoaded', function () {
+        try {
+          if (window.netlifyIdentity) {
+            window.netlifyIdentity.on('init', function (user) {
+              if (!user) {
+                window.netlifyIdentity.open();
+              }
+            });
+          }
+        } catch (e) {
+          logBoot("Post-DOM init error: " + (e && e.message ? e.message : e));
+        }
+      });
+    </script>
   </head>
   <body>
+    <div class="boot">
+      <div><strong>Loading Content Manager…</strong></div>
+      <div class="muted">If this stays here more than ~10 seconds, refresh the page.</div>
+      <div id="bootError" class="error" style="display:none"></div>
+    </div>
     <script>
-      // If you’re not logged in yet, show the Netlify Identity modal automatically
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", (user) => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.reload();
-            });
-            window.netlifyIdentity.open(); // open the login/signup dialog
-          }
-        });
-      }
+      // If something throws before CMS paints, show why (instead of a blank white screen)
+      window.addEventListener('error', function (e) {
+        var el = document.getElementById('bootError');
+        if (el) {
+          el.style.display = 'block';
+          el.textContent = 'Boot error: ' + (e && e.message ? e.message : String(e));
+        }
+      });
     </script>
   </body>
 </html>
