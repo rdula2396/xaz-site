@@ -27,7 +27,7 @@
     </script>
 
     <!-- Decap (Netlify) CMS -->
-    <script src="https://unpkg.com/decap-cms@3.0.12/dist/decap-cms.js"></script>
+    
 
     <!-- IMPORTANT: manual init so we don't fetch /admin/config.yml at all -->
     <script>
@@ -118,6 +118,50 @@
         }
       });
     </script>
+<script>
+  // Robust loader: try unpkg, then jsDelivr. When loaded, init with CONFIG.
+  (function () {
+    function fail(msg) {
+      document.body.insertAdjacentHTML(
+        "beforeend",
+        '<div class="boot"><div class="error">CMS load error: ' + msg + "</div></div>"
+      );
+    }
+    function initWhenReady() {
+      try {
+        if (window.CMS && window.CONFIG) {
+          CMS.init({ config: CONFIG });
+        } else if (!window.CMS) {
+          fail("CMS object missing after load.");
+        }
+      } catch (e) {
+        fail(e && e.message ? e.message : String(e));
+      }
+    }
+    function load(src, onload, onerror) {
+      var s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      s.onload = onload;
+      s.onerror = onerror;
+      document.head.appendChild(s);
+    }
+    load(
+      "https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js",
+      initWhenReady,
+      function () {
+        load(
+          "https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js",
+          initWhenReady,
+          function () {
+            fail("Could not load Decap CMS from either CDN.");
+          }
+        );
+      }
+    );
+  })();
+</script>
+
   </head>
   <body>
     <div class="boot">
