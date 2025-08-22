@@ -72,19 +72,30 @@
             ]
           },
           {
-            name: "cms_gallery",
-            label: "Gallery",
-            folder: "public/uploads/gallery",
-            create: true,
-            slug: "{{slug}}",
-            extension: "json",
-            format: "json",
-            fields: [
-              { label: "Title", name: "title", widget: "string" },
-              { label: "Image", name: "image", widget: "image" },
-              { label: "Alt Text", name: "alt", widget: "string", required: false }
-            ]
-          }
+  name: "cms_gallery",
+  label: "Gallery",
+  editor: { preview: false },
+  files: [
+    {
+      file: "public/data/gallery.json",
+      label: "Gallery Items",
+      name: "gallery_file",
+      format: "json",
+      fields: [
+        {
+          label: "Items",
+          name: "items",
+          widget: "list",
+          fields: [
+            { label: "Image", name: "src", widget: "image" },
+            { label: "Alt Text", name: "alt", widget: "string", required: false }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
         ]
       };
 
