@@ -47,5 +47,17 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+<!-- Hidden “shadow” form so Netlify detects our SPA form at build time -->
+<form name="quote" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="quote" />
+  <input type="text"   name="name" />
+  <input type="tel"    name="phone" />
+  <input type="text"   name="location" />
+  <input type="text"   name="vehicle" />
+  <input type="text"   name="service" />
+  <input type="text"   name="preference" />
+  <textarea name="notes"></textarea>
+</form>
+
   </body>
 </html>
