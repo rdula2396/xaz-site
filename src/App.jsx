@@ -98,7 +98,7 @@ function Header() {
         <nav className="hidden md:flex items-center gap-6 text-[15px] text-gray-700">
           <a href="#services" className="hover:text-gray-900">Services</a>
           <a href="#gallery" className="hover:text-gray-900">Gallery</a>
-          <a href="#contact" className="hover:text-gray-900">Contact</a>
+          <a href="#quote" className="hover:text-gray-900">Contact</a>
         </nav>
 
         {/* Right: quick call */}
@@ -133,9 +133,9 @@ function Hero() {
                 Call Now
               </a>
               <a
-                href="#contact"
+                href="#quote"
                 onClick={(e) => {
-                  const el = document.getElementById("contact");
+                  const el = document.getElementById("quote");
                   if (el) {
                     e.preventDefault();
                     el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -311,8 +311,8 @@ function Contact() {
             </div>
           </div>
 
-          {/* Right: Quote form (Netlify‑ready) */}
-          <div className="rounded-md border border-gray-200 p-5">
+          {/* Right: Quote form — Netlify Forms ready */}
+          <div id="quote" className="rounded-md border border-gray-200 p-5">
             <h3 className="text-base font-semibold">Request a Quote</h3>
             {submitted ? (
               <div className="mt-4 rounded-sm bg-green-50 border border-green-200 p-4 text-green-900 text-sm">
@@ -391,7 +391,7 @@ function Footer() {
           </div>
           <div className="flex items-center gap-3">
             <a href={TEL} className="inline-flex items-center rounded-sm border border-gray-300 px-3 py-2 font-medium hover:bg-gray-100">Call</a>
-            <a href="#contact" className="inline-flex items-center rounded-sm border border-gray-300 px-3 py-2 font-medium hover:bg-gray-100">Get a Quote</a>
+            <a href="#quote" className="inline-flex items-center rounded-sm border border-gray-300 px-3 py-2 font-medium hover:bg-gray-100">Get a Quote</a>
             <a href="#home" className="inline-flex items-center rounded-sm border border-gray-300 px-3 py-2 font-medium hover:bg-gray-100">Back to top</a>
           </div>
         </div>
